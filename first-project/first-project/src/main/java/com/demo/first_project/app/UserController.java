@@ -15,80 +15,70 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    private Map<Integer, User> userdb = new HashMap<>();
+    private UserService userService = new UserService();
 
-//    http://localhost:8080/user
+    //    http://localhost:8080/user
     @PostMapping
-    public String createUser(@RequestBody User user){
-        userdb.put(user.getId(),user);
-        return  "User Created";
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-//    http://localhost:8080/user
+    //    http://localhost:8080/user
     @PutMapping
-    public ResponseEntity<String> updateUser(@RequestBody User user){
-        if (userdb.containsKey(user.getId(  )))
-            userdb.put(user.getId(), user);
-        else return new ResponseEntity<>("User Not Found",HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>("Update User Data", HttpStatus.OK);
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User update = userService.updateUser(user);
+        if (update == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(update);
     }
 
-//    http://localhost:8080/user
-    @GetMapping
-    public List<User> getUser(){
-        return new ArrayList<>(userdb.values());
-    }
+    //    http://localhost:8080/user
 
-//    http://localhost:8080/user/7
+
+    //    http://localhost:8080/user/7
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable int id){
-        userdb.remove(id);
-        return "Delete User";
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        boolean isDelete = userService.deleteUser(id);
+        if (!isDelete)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public List<User> getAllUser() {
+        return userService.getAllUser();
     }
 
 
-//    http://localhost:8080/user/2
+    //    http://localhost:8080/user/2
     @GetMapping("/{id}")
-    public ResponseEntity<User> getSingleUser(@PathVariable int id){
-        if(!userdb.containsKey(id)) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
-        return ResponseEntity.ok(userdb.get(id));
-    }
-
-//    http://localhost:8080/user/search?name=rahul
-    @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsername(
-            @RequestParam(required=false, defaultValue="amit") String name
-    ){
-        List<User> users=userdb.values().stream()
-                .filter(u -> u.getName().equalsIgnoreCase(name))
-                .toList();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<User> getSingleUser(@PathVariable int id) {
+        User user=userService.getSingleUser(id);
+        if(user==null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(user);
     }
 
 
-//    http://localhost:8080/user/searchne?name=rahul&email=rahul@gmail.com
+
+
+    //    http://localhost:8080/user/searchne?name=rahul&email=rahul@gmail.com
     @GetMapping("/searchne")
     public ResponseEntity<List<User>> searchUserboth(
-            @RequestParam(required=false, defaultValue="amit") String name,
-            @RequestParam(required=false, defaultValue="amit") String email
-
-    ){
-        List<User> users=userdb.values().stream()
-                .filter(u -> u.getName().equalsIgnoreCase(name))
-                .filter(u -> u.getEmail().equalsIgnoreCase(email))
-
-                .toList();
-        return ResponseEntity.ok(users);
+            @RequestParam(required = false, defaultValue = "amit") int name,
+            @RequestParam(required = false, defaultValue = "amit") String email
+    ) {
+        return ResponseEntity.ok(userService.searchUser(name,email));
     }
 
-//    http://localhost:8080/user/info/1?name=admin
+    //    http://localhost:8080/user/info/1?name=admin
     @GetMapping("/info/{id}")
     public String getInfo(
             @PathVariable int id,
             @RequestParam String name,
-            @RequestHeader("User-Agent") String userAgent){
-        return "User Agent: " + userAgent + " : " + id +" : "+name;
+            @RequestHeader("User-Agent") String userAgent) {
+        return "User Agent: " + userAgent + " : " + id + " : " + name;
     }
 
 }
