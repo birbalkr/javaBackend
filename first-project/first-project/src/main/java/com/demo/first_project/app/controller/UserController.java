@@ -1,15 +1,12 @@
-package com.demo.first_project.app;
+package com.demo.first_project.app.controller;
 
-import jakarta.websocket.server.PathParam;
-import org.apache.coyote.Request;
+import com.demo.first_project.app.model.User;
+import com.demo.first_project.app.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -66,7 +63,7 @@ public class UserController {
     //    http://localhost:8080/user/searchne?name=rahul&email=rahul@gmail.com
     @GetMapping("/searchne")
     public ResponseEntity<List<User>> searchUserboth(
-            @RequestParam(required = false, defaultValue = "amit") int name,
+            @RequestParam(required = false, defaultValue = "amit") String name,
             @RequestParam(required = false, defaultValue = "amit") String email
     ) {
         return ResponseEntity.ok(userService.searchUser(name,email));

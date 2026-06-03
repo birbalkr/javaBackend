@@ -1,7 +1,6 @@
-package com.demo.first_project.app;
+package com.demo.first_project.app.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.demo.first_project.app.model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,8 +18,8 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        if (userdb.containsKey(user.getId()))
-            return null;
+        if (!userdb.containsKey(user.getId()))
+            throw new IllegalArgumentException("User with ID: "+user.getId()+" does not exist");
        userdb.put(user.getId(), user);
        return user;
     }
