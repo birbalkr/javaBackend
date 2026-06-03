@@ -1,6 +1,8 @@
 package com.demo.first_project.app.service;
 
 import com.demo.first_project.app.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,8 +13,10 @@ import java.util.Map;
 @Service
 public class UserService {
     private Map<Integer, User> userdb = new HashMap<>();
+    private final Logger logger= LoggerFactory.getLogger(UserService.class);
 
     public User createUser(User user) {
+        logger.trace("Create........ log..");
         userdb.putIfAbsent(user.getId(), user);
         return user;
     }
