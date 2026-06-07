@@ -1,10 +1,6 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class JDBCDemo {
     private static final String URL = "jdbc:mysql://localhost:3306/demo_db";
@@ -15,9 +11,9 @@ public class JDBCDemo {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             System.out.println("Connected to Databases");
 //            insertData(conn, "Aditya", "aditya@gmail.com");
-            selectStudent(conn);
-            updateStudent(conn, 2,"admin1","admin@gmail.com");
-            deleteStudents(conn,3);
+//            selectStudent(conn);
+            updateStudent(conn, 7,"admin1","admin@gmail.com");
+//            deleteStudents(conn,3);
             selectStudent(conn);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -53,11 +49,13 @@ public class JDBCDemo {
     }
 
     private  static void updateStudent(Connection conn, int id, String name, String email){
-        String sql = "UPDATE student SET name = '" + name +
-                "', email = '" + email +
-                "' WHERE id = " + id;
-        try(Statement stmt = conn.createStatement()){
-           stmt.executeUpdate(sql);
+        String sql = "UPDATE student SET name = ?, email = ?  WHERE id = ?";
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1, name);
+            pstmt.setString(2, email);
+            pstmt.setInt(3, id);
+            int rows = pstmt.executeUpdate();
+            System.out.println("Updated " + rows + " row(s)");
         }catch (SQLException e) {
             e.printStackTrace();
         }
