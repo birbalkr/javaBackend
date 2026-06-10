@@ -1,6 +1,7 @@
 package com.project.fitness.controller;
 
 
+import com.project.fitness.dto.RegisterRequest;
 import com.project.fitness.model.User;
 import com.project.fitness.service.UserService;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public User register(@RequestBody User user){
-        return userService.register(user);
+    public User register(@RequestBody RegisterRequest registerRequest){
+        return userService.register(registerRequest);
     }
 }
