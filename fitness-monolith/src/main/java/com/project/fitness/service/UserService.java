@@ -2,6 +2,7 @@ package com.project.fitness.service;
 
 
 import com.project.fitness.dto.RegisterRequest;
+import com.project.fitness.dto.UserResponse;
 import com.project.fitness.model.User;
 import com.project.fitness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +18,26 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User register(RegisterRequest registerRequest) {
-        User user = new User(
-                null,
-                registerRequest.getEmail(),
-                registerRequest.getPassword(),
-                registerRequest.getFirstName(),
-                registerRequest.getLastName(),
-                Instant.parse("2025-12-08T14:49:41.208Z")
-                        .atZone(ZoneOffset.UTC)
-                        .toLocalDateTime(),
-                Instant.parse("2025-12-08T14:49:41.208Z")
-                        .atZone(ZoneOffset.UTC)
-                        .toLocalDateTime(),
-                List.of(),
-                List.of()
-        );
-        return userRepository.save(user);
+    public UserResponse register(RegisterRequest registerRequest) {
+        User user =  User.builder()
+                .email(registerRequest.getEmail())
+                .password(registerRequest.getPassword())
+                .firstName(registerRequest.getFirstName())
+                .lastName(registerRequest.getLastName())
+                .build();
+        User savedUser = userRepository.save(user);
+        return mapToResponse(savedUser);
+    }
+
+    private UserResponse mapToResponse(User savedUser) {
+        UserResponse response =new UserResponse();
+        response.setId(savedUser.getId());
+        response.setEmail(savedUser.getEmail());
+        response.setPassword(savedUser.getPassword());
+        response.setFirstName(savedUser.getFirstName());
+        response.setLastName(savedUser.getLastName());
+        response.setCreatedAt(savedUser.getCreatedAt());
+        response.setUpdatedAt(savedUser.getUpdatedAt());
+        return response;
     }
 }
